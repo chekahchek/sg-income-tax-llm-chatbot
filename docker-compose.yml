@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  postgres:
+    build: .
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./database/tables.sql:/docker-entrypoint-initdb.d/init.sql
