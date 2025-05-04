@@ -1,11 +1,10 @@
-val CatsEffectVersion =
-
-ThisBuild / scalaVersion     := "2.13.12"
+ThisBuild / scalaVersion     := "2.13.16"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
 val CirceVersion = "0.14.0-M5"
+val Http4sVersion = "1.0.0-M21"
 
 lazy val root = (project in file("."))
   .settings(
@@ -20,6 +19,9 @@ lazy val root = (project in file("."))
       "com.github.pureconfig" %% "pureconfig-generic" % "0.17.5",
       "io.circe"        %% "circe-generic"       % CirceVersion,
       "io.circe"        %% "circe-literal"       % CirceVersion,
-
+      "io.circe"        %% "circe-parser"        % CirceVersion,
+      "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
+      "org.http4s"      %% "http4s-circe"        % Http4sVersion,
+      "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
     )
   )
