@@ -1,22 +1,23 @@
 package chatbot
+
+import doobie._
+import doobie.implicits._
+import doobie.postgres._
+import doobie.postgres.implicits._
+import doobie.Update0
 import org.jsoup._
 import collection.JavaConverters._
 import sttp.client4.quick._
 import sttp.model.StatusCode
-//import java.io.File
-
 import Database.createDbSession
 import dataclass.DbConfig
-import dataclass.EmbeddingData
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import skunk._
-import skunk.implicits._
-import skunk.codec.all._
-
-import cats.effect.{IO, IOApp, Resource, ExitCode}
+import cats.effect.{IO, IOApp, ExitCode}
 import cats.implicits._
 import io.circe.parser._
+//import scala.annotation.unused
+//import java.io.File
 
 
 object WebScrape extends IOApp {
@@ -30,9 +31,7 @@ object WebScrape extends IOApp {
     "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief"
   )
 
-
   def scrapeWebsite(site: String): IO[String] = {
-
       val doc = Jsoup.connect(site)
         .timeout(10000)
         .userAgent("Mozilla/5.0")
@@ -79,31 +78,27 @@ object WebScrape extends IOApp {
   }
 
 
+  def insertTextAndEmbeddings(id: String, embedding: Array[Double]): Update0 = {
+    sql"""
+         INSERT INTO tax (id, embedding)
+         VALUES ($id, $embedding)
+       """.update
+  }
+
+
   def run(args: List[String]): IO[ExitCode] = {
     val config: DbConfig = ConfigSource.default.at("db").loadOrThrow[DbConfig]
-    val session = createDbSession(config)
+    val transactor = createDbSession(config)
 
-    val codec: Codec[EmbeddingData] =
-      (varchar ~ Array[Double]).imap {
-        case (content, embeddings) => EmbeddingData(content, embeddings)
-      }(embeddingData => (embeddingData.content, embeddingData.embeddings))
-
-    val insertEmbedding: Command[EmbeddingData] =
-      sql"""
-           INSERT INTO data
-           VALUES ($codec)
-         """.command
 
     websites.traverse { site =>
       for {
         contents <- scrapeWebsite(site)
-        embeddings <- getEmbeddings(contents)
-//        _ <- IO(println(s"Embeddings = ${embeddings.mkString("Array(", ", ", ")")}"))
-        _ <- session.use { s =>
-          s.prepare(insertEmbedding).use { cmd =>
-            cmd.execute(EmbeddingData(contents, embeddings))
-          }
-        }
+        embedding <- getEmbeddings(contents)
+//        embedding = Array(0.1, 0.2, 0.3)
+        _ <- transactor.use {xa =>
+        insertTextAndEmbeddings(contents, embedding).run.transact(xa)
+      }
       } yield ()
       }.as(ExitCode.Success)
     }

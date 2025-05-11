@@ -1,8 +1,9 @@
 package dataclass
 
-final case class DbConfig(host: String,
-                          port: Int,
-                          username: String,
+
+final case class DbConfig(driver: String,
+                          url: String,
+                          user: String,
                           password: String,
-                          database: String,
-                          sessions: Int)
+                          threadPoolSize: Int
+                         )
