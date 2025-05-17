@@ -1,12 +1,13 @@
-package chatbot
+package database
 
 import cats.effect.{IO, Resource}
 import dataclass.DbConfig
 import doobie.hikari.HikariTransactor
-import scala.concurrent.ExecutionContext
 import doobie.util.ExecutionContexts
 
-object Database {
+import scala.concurrent.ExecutionContext
+
+object DbService {
   def transactor(config: DbConfig, executionContext: ExecutionContext): Resource[IO, HikariTransactor[IO]] = {
     HikariTransactor.newHikariTransactor[IO](
       config.driver,
