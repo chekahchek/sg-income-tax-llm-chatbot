@@ -2,8 +2,8 @@ package chatbot
 
 import cats.effect.{ExitCode, IOApp, IO}
 import api.LLMClient.getEmbeddings
+import database.DbConfig
 import database.DbService.createDbSession
-import dataclass.DbConfig
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import sql.Queries.compareEmbeddings

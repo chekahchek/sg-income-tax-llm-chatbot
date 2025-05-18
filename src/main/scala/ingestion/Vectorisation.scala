@@ -4,13 +4,13 @@ import doobie._
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
-import dataclass.DbConfig
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import cats.effect.{IO, IOApp, ExitCode}
 import cats.implicits._
 import WebScrape._
 import api.LLMClient._
+import database.DbConfig
 import sql.Queries._
 import database.DbService.createDbSession
 

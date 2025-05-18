@@ -1,7 +1,6 @@
 package database
 
 import cats.effect.{IO, Resource}
-import dataclass.DbConfig
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 

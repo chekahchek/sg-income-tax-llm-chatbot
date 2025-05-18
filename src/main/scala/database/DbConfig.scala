@@ -1,5 +1,4 @@
-package dataclass
-
+package database
 
 final case class DbConfig(driver: String,
                           url: String,

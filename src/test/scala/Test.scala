@@ -6,6 +6,7 @@ import doobie.postgres._
 import doobie.postgres.implicits._
 import doobie.util.transactor.Transactor
 import org.scalatest.funsuite.AnyFunSuite
+import ingestion.WebScrape._
 
 class Test extends AnyFunSuite {
   test("Insert Embeddings") {
@@ -38,5 +39,11 @@ class Test extends AnyFunSuite {
 
     // Run the program
     program.unsafeRunSync()
+  }
+
+  test("Webscrape") {
+    val site = "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/parent-relief-parent-relief-(disability)"
+    val result = scrapeWebsite(site).unsafeRunSync()
+    println(result)
   }
 }

@@ -6,18 +6,17 @@ import doobie.postgres._
 import doobie.postgres.implicits._
 
 object Queries {
-
-  def insertTextAndEmbeddings(id: String, embedding: Array[Double]): Update0 = {
+  def insertTextAndEmbeddings(content: String, embedding: Array[Double]): Update0 = {
     sql"""
-         INSERT INTO tax (id, embedding)
-         VALUES ($id, $embedding)
+         INSERT INTO documents (content, embedding)
+         VALUES ($content, $embedding)
        """.update
   }
 
   def compareEmbeddings(embeddingStr: String, limit: Int = 5): ConnectionIO[List[String]] = {
     sql"""
-  SELECT id
-  FROM embeddings
+  SELECT content
+  FROM documents
   ORDER BY 1 - (embedding <=> $embeddingStr::vector) DESC
   LIMIT $limit
   """.query[String].to[List]

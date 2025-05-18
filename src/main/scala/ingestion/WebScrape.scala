@@ -2,7 +2,7 @@ package ingestion
 
 import cats.effect.IO
 import org.jsoup._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 //import scala.annotation.unused
 //import java.io.File
 
@@ -11,7 +11,9 @@ object WebScrape  {
   // Sites to scrape
   val excludedContents = List("FAQs", "Related Content")
   val websites : List[String] = List(
-    "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief"
+    "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief",
+    "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/spouse-relief-spouse-relief-(disability)",
+
   )
 
   def scrapeWebsite(site: String): IO[String] = {
