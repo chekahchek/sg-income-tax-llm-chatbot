@@ -13,7 +13,7 @@ object Queries {
        """.update
   }
 
-  def compareEmbeddings(embeddingStr: String, limit: Int = 5): ConnectionIO[List[String]] = {
+  def reteiveContext(embeddingStr: String, limit: Int = 5): ConnectionIO[List[String]] = {
     sql"""
   SELECT content
   FROM documents

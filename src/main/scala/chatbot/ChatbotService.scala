@@ -6,7 +6,7 @@ import database.DbConfig
 import database.DbService.createDbSession
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import sql.Queries.compareEmbeddings
+import sql.Queries.reteiveContext
 import doobie.implicits._
 
 
@@ -16,13 +16,11 @@ object ChatbotService extends IOApp{
     val config: DbConfig = ConfigSource.default.at("db").loadOrThrow[DbConfig]
     val transactor = createDbSession(config)
 
-    val query = "Test"
-//    val embeddings = Array(0.1, 0.2, 0.3)
-
+    val query = "How much is the earned income relief?"
     for {
       embeddings <- getEmbeddings(query)
       embeddingStr = embeddings.mkString("[", ",", "]")
-      context <-  transactor.use { xa => compareEmbeddings(embeddingStr).transact(xa)}
+      context <-  transactor.use { xa => reteiveContext(embeddingStr).transact(xa)}
       _ <- IO.println(context)
     } yield ()
   }.as(ExitCode.Success)
