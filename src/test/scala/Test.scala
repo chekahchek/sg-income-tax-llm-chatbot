@@ -4,9 +4,15 @@ import doobie._
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
+import pureconfig.generic.auto._
 import doobie.util.transactor.Transactor
 import org.scalatest.funsuite.AnyFunSuite
 import ingestion.WebScrape._
+import api.LLMClient._
+import database.DbConfig
+import database.DbService.createDbSession
+import pureconfig.ConfigSource
+import chatbot.ChatbotService
 
 class Test extends AnyFunSuite {
   test("Insert Embeddings") {
@@ -42,8 +48,25 @@ class Test extends AnyFunSuite {
   }
 
   test("Webscrape") {
-    val site = "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/parent-relief-parent-relief-(disability)"
-    val result = scrapeWebsite(site).unsafeRunSync()
+    val rootUrl = "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/"
+    val article = "parent-relief-parent-relief-(disability)"
+    val result = scrapeWebsite(rootUrl, article).unsafeRunSync()
     println(result)
+  }
+
+  test("Chat") {
+    val query = "hi\nhow are you?"
+    val instructions = "You are a helpful assistant."
+    val result = generateChatResponse(query, instructions).unsafeRunSync()
+    println(result)
+  }
+
+  test("Chat with context") {
+    val query = "How much is the earned income relief?"
+    val config: DbConfig = ConfigSource.default.at("db").loadOrThrow[DbConfig]
+    val transactor = createDbSession(config)
+    val chatbotService = new ChatbotService(transactor)
+    val response = chatbotService.chat(query).unsafeRunSync()
+    println(response)
   }
 }
