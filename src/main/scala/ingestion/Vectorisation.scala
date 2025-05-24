@@ -1,5 +1,6 @@
 package ingestion
 
+import java.time.Instant
 import doobie._
 import doobie.implicits._
 import doobie.postgres._
@@ -20,12 +21,12 @@ object Vectorisation extends IOApp {
     val config: DbConfig = ConfigSource.default.at("db").loadOrThrow[DbConfig]
     val transactor = createDbSession(config)
 
-    websites.traverse { site =>
+    articles.traverse {article =>
       for {
-        contents <- scrapeWebsite(site)
+        contents <- scrapeWebsite(rootURL, article)
         embedding <- getEmbeddings(contents)
         _ <- transactor.use {xa =>
-          insertTextAndEmbeddings(contents, embedding).run.transact(xa)
+          insertTextAndEmbeddings(article, contents, embedding, Instant.now()).run.transact(xa)
         }
       } yield ()
     }.as(ExitCode.Success)

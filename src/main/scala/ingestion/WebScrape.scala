@@ -10,14 +10,15 @@ import scala.jdk.CollectionConverters._
 object WebScrape  {
   // Sites to scrape
   val excludedContents = List("FAQs", "Related Content")
-  val websites : List[String] = List(
-    "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief",
-    "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/spouse-relief-spouse-relief-(disability)",
+  val rootURL = "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/"
+  val articles : List[String] = List(
+    "earned-income-relief",
+    "spouse-relief-spouse-relief-(disability)",
 
   )
 
-  def scrapeWebsite(site: String): IO[String] = {
-      val doc = Jsoup.connect(site)
+  def scrapeWebsite(rootURL: String, article: String): IO[String] = {
+      val doc = Jsoup.connect(rootURL.concat(article))
         .timeout(10000)
         .userAgent("Mozilla/5.0")
         .get()
