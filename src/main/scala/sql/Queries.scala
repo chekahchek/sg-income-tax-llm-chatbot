@@ -18,7 +18,7 @@ object Queries {
        """.update
   }
 
-  def reteiveContext(embeddingStr: String, limit: Int = 1): ConnectionIO[List[String]] = {
+  def retrieveContext(embeddingStr: String, limit: Int = 1): ConnectionIO[List[String]] = {
     sql"""
   SELECT content
   FROM documents
