@@ -7,6 +7,14 @@ import doobie.util.ExecutionContexts
 import scala.concurrent.ExecutionContext
 
 object DbService {
+  def createDbSession(config: DbConfig): Resource[IO, HikariTransactor[IO]] = {
+    for {
+      config     <- Resource.pure(config)
+      ec         <- ExecutionContexts.fixedThreadPool[IO](config.threadPoolSize)
+      transactor <- transactor(config, ec)
+    } yield transactor
+  }
+
   def transactor(config: DbConfig, executionContext: ExecutionContext): Resource[IO, HikariTransactor[IO]] = {
     HikariTransactor.newHikariTransactor[IO](
       config.driver,
@@ -14,14 +22,6 @@ object DbService {
       config.user,
       config.password,
       executionContext
-      )
-  }
-
-  def createDbSession(config: DbConfig): Resource[IO, HikariTransactor[IO]] = {
-    for {
-      config <- Resource.pure(config)
-      ec <- ExecutionContexts.fixedThreadPool[IO](config.threadPoolSize)
-      transactor <- transactor(config, ec)
-    } yield transactor
+    )
   }
 }

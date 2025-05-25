@@ -1,13 +1,11 @@
 package chatbot
 
+import api.LLMClient.{generateChatResponse, getEmbeddings}
 import cats.effect.{IO, Resource}
-import api.LLMClient.getEmbeddings
+import chatbot.PromptTemplate.prompt
 import doobie.hikari.HikariTransactor
-import sql.Queries.retrieveContext
 import doobie.implicits._
-import api.LLMClient.generateChatResponse
-import PromptTemplate.prompt
-
+import sql.Queries.retrieveContext
 
 class ChatbotService(transactor: Resource[IO, HikariTransactor[IO]]) {
 
