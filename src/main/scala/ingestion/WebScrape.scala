@@ -3,9 +3,6 @@ package ingestion
 import cats.effect.IO
 import org.jsoup._
 import scala.jdk.CollectionConverters._
-//import scala.annotation.unused
-//import java.io.File
-
 
 object WebScrape  {
   // Sites to scrape
@@ -14,7 +11,18 @@ object WebScrape  {
   val articles : List[String] = List(
     "earned-income-relief",
     "spouse-relief-spouse-relief-(disability)",
-
+    "foreign-domestic-worker-levy-(fdwl)-relief",
+    "central-provident-fund(cpf)-relief-for-employees",
+    "central-provident-fund-(cpf)-relief-for-self-employed-employee-who-is-also-self-employed",
+    "parent-relief-parent-relief-(disability)",
+    "grandparent-caregiver-relief",
+    "sibling-relief-(disability)",
+    "working-mother's-child-relief-(wmcr)",
+    "qualifying-child-relief-(qcr)-child-relief-(disability)",
+    "life-insurance-relief",
+    "course-fees-relief",
+    "central-provident-fund-(cpf)-cash-top-up-relief",
+    "compulsory-and-voluntary-medisave-contributions"
   )
 
   def scrapeWebsite(rootURL: String, article: String): IO[String] = {
@@ -22,9 +30,6 @@ object WebScrape  {
         .timeout(10000)
         .userAgent("Mozilla/5.0")
         .get()
-
-//      val file = new File("src/main/scala/chatbot/IRAS.html")
-//      val doc = Jsoup.parse(file)
 
       val resultsBuffer = doc.select("section").asScala.flatMap { section =>
         val h2 = section.select("h2")

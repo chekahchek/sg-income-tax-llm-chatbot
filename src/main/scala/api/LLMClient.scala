@@ -49,36 +49,38 @@ object LLMClient {
     } yield chatOutput
   }
 
+  private def postRequest(url: String, payLoad: String): Either[String, Response[String]] = {
+    val response = quickRequest
+      .post(uri"$url")
+      .auth.bearer(token)
+      .header("Content-Type", "application/json")
+      .body(payLoad)
+      .send()
+
+    if (response.code == StatusCode.Ok) {
+      Right(response)
+    } else {
+      Left(s"API request failed with status: ${response.code} - ${response.statusText}")
+    }
+  }
+
   def getEmbeddings(text: String): IO[Array[Double]] = {
     val jsonPayLoad = Map("input" -> text, "model" -> embeddingModel).asJson.noSpaces
-    for {
-      response <- IO(quickRequest
-        .post(uri"$embeddingUrl")
-        .auth.bearer(token)
-        .header("Content-Type", "application/json")
-        .body(jsonPayLoad)
-        .send())
+    val response = postRequest(embeddingUrl, jsonPayLoad) match {
+      case Right(response) => response
+      case Left(error) => throw new Exception(error)
+    }
+    IO.fromEither(decodeOpenAIEmbed(response))
+    }
 
-      _ <- if (response.code == StatusCode.Ok) IO.unit
-      else IO.raiseError(new Exception(s"API request failed with status: ${response.statusText}"))
-
-      embedding <- IO.fromEither(decodeOpenAIEmbed(response))
-    } yield embedding
-  }
 
   def generateChatResponse(query: String, instructions: String): IO[String] = {
     val jsonPayLoad = Map("input" -> query, "instructions" -> instructions, "model" -> chatModel).asJson.noSpaces
-    for {
-      response <- IO(quickRequest
-        .post(uri"$chatUrl")
-        .auth.bearer(token)
-        .header("Content-Type", "application/json")
-        .body(jsonPayLoad)
-        .send())
+    val response = postRequest(chatUrl, jsonPayLoad) match {
+      case Right(response) => response
+      case Left(error) => throw new Exception(error)
+    }
+    IO.fromEither(decodeOpenAIChat(response))
+    }
 
-      _ <- if (response.code == StatusCode.Ok) IO.unit
-      else IO.raiseError(new Exception(s"API request failed with status: ${response.statusText}"))
-      chatOutput <- IO.fromEither(decodeOpenAIChat(response))
-    } yield chatOutput
-  }
 }

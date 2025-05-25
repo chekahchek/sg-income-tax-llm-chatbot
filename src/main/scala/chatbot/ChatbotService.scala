@@ -16,7 +16,7 @@ class ChatbotService(transactor: Resource[IO, HikariTransactor[IO]]) {
       embeddings <- getEmbeddings(query)
       embeddingStr = embeddings.mkString("[", ",", "]")
       context <- transactor.use { xa => reteiveContext(embeddingStr).transact(xa) }
-      queryWithContext = query + "\n" + context.mkString("\n")
+      queryWithContext = query + "\n" + "###\n" + context.mkString("\n") + "\n###"
       chatResponse <- generateChatResponse(queryWithContext, prompt)
     } yield chatResponse
   }
