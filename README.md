@@ -1,5 +1,5 @@
 ## Singapore income tax chatbot
-This is a chatbot that help to answer questions regarding tax relief. 
+LLM chatbot to answer questions regarding tax relief in Singapore. 
 
 Information is scraped from the IRAS website, and stored in a Postgres database.
 Based on the user's input, appropriate information is retrieved from the database and 
