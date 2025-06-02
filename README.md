@@ -18,9 +18,8 @@ export API_KEY=your_api_key
 docker-compose up --build
 ```
 
-3. Run Main.scala
+3. Run ingestion/Vectorisation.scala to scrape and store the documents in the database
 
-4. Send POST request to `chat` endpoint to get a response.
 
 ## Example usage
 ```
